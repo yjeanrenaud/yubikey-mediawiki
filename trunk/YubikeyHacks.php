@@ -24,6 +24,8 @@
 
 if( !defined( 'MEDIAWIKI' ) ) die( -1 );
 
+require_once("User.php");
+
 class Yubikey_hacks {
   static function hackurl($haystack, $needle, $replacement) {
     $p = strpos($haystack, $needle);
@@ -35,6 +37,26 @@ class Yubikey_hacks {
       wfDebug("hackurl: replacing '" . $needle . "' with '" . $replacement . "'\n");
       return substr_replace($haystack, $replacement, $p, strlen($needle));
     }
+  }
+  function isuserlocal( $username ) {
+    $id = User::idFromName($username);
+
+    wfDebug("isuserlocal: username " . $username . " has identity " . $id . "\n");
+
+    if ($id) {
+      $dbr =& wfGetDB( DB_SLAVE );
+      $prefix = $dbr->selectField(YubikeyDBTable(), 'yk_prefix',
+				  array('yk_user' => $id));
+      if ($prefix) {
+	wfDebug("isuserlocal: username " . $username . " has yubikey prefix " . $prefix . "\n");
+	return false;
+      } else {
+	wfDebug("isuserlocal: username " . $username . " is local\n");
+	return true;
+      }
+    }
+    // Anonymous users
+    return true;
   }
 }
 
