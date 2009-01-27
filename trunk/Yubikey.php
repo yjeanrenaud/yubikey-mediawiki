@@ -268,7 +268,7 @@ function YubikeyHackReturnTo() {
 $wgExtensionCredits['other'][]
 = array(
 	'name' => 'Yubikey ',
-	'version' => '0.6',
+	'version' => '0.7',
 	'author' => 'Richard Levitte',
 	/* 'url' => 'http://www.mediawiki.org/wiki/Extension:QISSingleSignOn', */
 	'description' => 'Sign on with youur Yubikey'
