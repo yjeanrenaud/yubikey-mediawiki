@@ -62,6 +62,7 @@ class YubikeyloginTemplate extends UserloginTemplate {
 	'Do you have a Yubikey account? <a href="' .
 	$link . '&subtype=yubikey' .
 	'">Log in</a>.';
+      $this->data['action'] .= '&subtype=noyubikey';
       parent::execute();
       return;
     } else {
@@ -70,6 +71,7 @@ class YubikeyloginTemplate extends UserloginTemplate {
 	'Do you have a non-Yubikey account? <a href="' .
 	$link . '&subtype=noyubikey' .
 	'">Log in</a>.';
+      $this->data['action'] .= '&subtype=yubikey';
     }
 
     // Create a link to alternate login, for non-yubikey accounts

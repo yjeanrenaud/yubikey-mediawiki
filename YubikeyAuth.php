@@ -26,34 +26,44 @@ if( !defined( 'MEDIAWIKI' ) ) die( -1 );
 
 require_once("Auth/Yubico.php");
 require_once("AuthPlugin.php");
+require_once("YubikeyHacks.php");
 
 class YubikeyAuth extends AuthPlugin {
+  // Only authenticate yubikey users, the rest will be taken care of by
+  // internal Mediawiki authentication
   function authenticate( $username, $password ) {
     global $wgYubikeyAPIId, $wgYubikeyAPIKey, $wgYubikeyValidationBaseURL;
 
     wfDebug("YubikeyAuth::authenticate: username '" . $username .
 	    "' password '" . $password . "'\n");
 
-    $yubi = new Auth_Yubico($wgYubikeyAPIId, $wgYubikeyAPIKey);
-    if ($wgYubikeyAPIKey <> "") {
-      $yubi->setValidationBaseURL($wgYubikeyValidationBaseURL);
+    if (!Yubikey_hacks::isuserlocal( $username )) {
+      $yubi = new Auth_Yubico($wgYubikeyAPIId, $wgYubikeyAPIKey);
+      if ($wgYubikeyAPIKey <> "") {
+	$yubi->setValidationBaseURL($wgYubikeyValidationBaseURL);
+      }
+      $auth = $yubi->verify($password);
+      if (PEAR::isError($auth)) {
+	wfDebug("Yubikey authentication failed: " . $auth->getMessage() . "\n");
+	wfDebug("Debug output from server: " . $yubi->getLastResponse() . "\n");
+	return false;
+      } else {
+	wfDebug("Yubikey authentication success!\n");
+	return true;
+      }
     }
-    $auth = $yubi->verify($password);
-    if (PEAR::isError($auth)) {
-      wfDebug("Yubikey authentication failed: " . $auth->getMessage() . "\n");
-      wfDebug("Debug output from server: " . $yubi->getLastResponse() . "\n");
-      return false;
-    } else {
-      wfDebug("Yubikey authentication success!\n");
-      return true;
-    }
-  }
-
-  function allowPasswordChange() {
     return false;
   }
 
+  // local users are allowed to change their password
+  function allowPasswordChange() {
+    global $wgUser;
+    return Yubikey_hacks::isuserlocal( $wgUser->getName() );
+  }
+
+  // strict when it's a yubikey user
   function strict() {
-    return true;
+    global $wgUser;
+    return !Yubikey_hacks::isuserlocal( $wgUser->getName() );
   }
 }

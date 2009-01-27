@@ -67,7 +67,7 @@ function YubikeyUserlogin( $par ) {
 }
 
 function wfSpecialYubikeyLogin( $par ) {
-  global $wgRequest, $wgSharedDB, $wgDBprefix;
+  global $wgRequest;
 
   $yubikey = $wgRequest->data['wpYubikey'];
 
@@ -168,13 +168,8 @@ function YubikeyAddNewAccount( $user, $byemail = false ) {
 function YubikeyAuthPluginSetup( &$auth ) {
   global $wgRequest;
 
-  // If there is no yubikey to validate, don't
-  if (!empty($wgRequest->data['wpYubikey'])) {
-    wfDebug("YubikeyAuthPluginSetup: replacing the normal auth plugin\n");
-    $auth = new YubikeyAuth;
-  } else {
-    wfDebug("YubikeyAuthPluginSetup: leaving the normal auth plugin alone\n");
-  }
+  wfDebug("YubikeyAuthPluginSetup: replacing the normal auth plugin\n");
+  $auth = new YubikeyAuth;
 
   return true;
 }
@@ -188,7 +183,7 @@ $wgHooks['AuthPluginSetup'][] = 'YubikeyAuthPluginSetup';
 
 /* Login/logout hooks ---------------------------------------------------- */
 
-function YubikeyLogoutComplete( &$user, $inject_html, $old_name ) {
+function YubikeyLogoutComplete( &$user, &$inject_html = '', $old_name = '' ) {
   YubikeyHackReturnTo();
   return true;
 }
@@ -249,7 +244,7 @@ function YubikeyDBTable() {
   if (isset($wgSharedDB)) {
     return "`$wgSharedDB`.${wgDBprefix}user_yubikey";
   } else {
-    return "${wgDBprefix}user_yubikey";
+    return "user_yubikey";
   }
 }
 
