@@ -24,6 +24,7 @@
 
 if( !defined( 'MEDIAWIKI' ) ) die( -1 );
 
+require_once("Exception.php");
 require_once("User.php");
 
 class Yubikey_hacks {
