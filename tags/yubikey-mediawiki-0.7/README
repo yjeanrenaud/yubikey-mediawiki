@@ -1,0 +1,39 @@
+Installation
+============
+
+Create the directory $MW_INSTALL_PATH/extensions/Yubikey and copy all
+files there.
+
+Add the user mapping table, like this:
+
+  mysql -h yourdbhost -u youradminuser -p yourwikidb < yubikey_table.sql
+
+Add the following line somewhere near the bottom of LocalSettings.php:
+
+  require_once("$IP/extensions/Yubikey/Yubikey.php");
+
+Theoretically, that should work out of the box.  However, you may want
+to consider setting some of the following variables.
+
+* $wgYubikeyValidationBaseURL -- This is the base URL for the
+  validation server that should be used.  If not set, the default in
+  php-yubico is used ('https://api.yubico.com/wsapi/verify' last I
+  looked).
+  [ NOTE: depending on the implementation of php-yubico, this may or
+  may not work.  If it doesn't, you're stuck with verifying with
+  Yubico's validation server ]
+* $wgYubikeyAPIId [REQUIRED!] -- The numeric API identity.
+* $wgYubikeyAPIKey -- The API key corresponding to the API identity.
+  May be an empty string, but that's not recommended from a security
+  point of view.
+
+Prerequisites
+=============
+
+  PEAR
+  php-yubikey
+
+Convert local user to use a Yubikey
+===================================
+
+There's no real functionality for that yet.
