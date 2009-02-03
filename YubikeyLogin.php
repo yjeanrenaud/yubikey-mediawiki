@@ -101,6 +101,7 @@ class YubikeyloginTemplate extends UserloginTemplate {
         </td>
         <td class="mw-input">
 	  <input type='password' class='loginPassword'
+	  	 autocomplete="off"
 	         name="wpYubikey" id="wpYubikey1"
 	         tabindex="1"
 	         value="" size='20'
@@ -249,6 +250,7 @@ class YubikeycreateTemplate extends QuickTemplate {
         </td>
         <td class="mw-input">
 	  <input type='password' class='loginPassword'
+	  	 autocomplete="off"
 	         name="wpYubikey" id="wpYubikey2"
 	         tabindex="<?php echo $tabIndex++; ?>"
 	         value="" size='20'
